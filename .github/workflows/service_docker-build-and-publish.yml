@@ -1,0 +1,31 @@
+on:
+  workflow_call:
+    inputs:
+      platforms:
+        type: string
+        default: 'linux/amd64,linux/arm64'
+      docker-tags:
+        required: true
+        type: string
+      dockerfile:
+        type: string
+        default: './dockerfile'
+      target:
+        type: string
+        default: 'release'
+
+jobs:
+  docker-publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: docker-build-action
+        uses: serversideup/github-action-docker-build@v4
+        with:
+          tags: "${{ inputs.docker-tags }}"
+          dockerfile: "${{ inputs.dockerfile }}"
+          registry-username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          registry-token: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          platforms: "${{ inputs.platforms }}"
+          target: "${{ inputs.target }}"
