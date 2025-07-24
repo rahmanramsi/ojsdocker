@@ -1,0 +1,29 @@
+networks:
+  proxy:
+    name: proxy
+
+services:
+  ojs:
+    build: .
+    networks:
+      - proxy
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    environment:
+      PHP_OPCACHE_ENABLE: 1
+    depends_on:
+      - database
+  
+  # MySQL service
+  database:
+    image: mysql:8.0
+    networks:
+      - proxy
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ojs
+      MYSQL_USER: ojs
+      MYSQL_PASSWORD: ojs
+    volumes:
+      - ./mysql:/var/lib/mysql
